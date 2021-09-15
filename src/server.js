@@ -14,7 +14,7 @@ app.use ( express.json() )
 
 //logger-middleware
 app.use((req, res, next) => {
-    console.log(`Method: ${req.method} Url: ${req.url}`);
+    console.log(`Method: ${req.method}, Url: ${req.url}, Body: ${req.body},  Params: ${req.params}`);
     next()
 })
 

@@ -31,13 +31,20 @@ router.get('/:id', async(req, res) => {
     }
 })
 
+//POST /hamsters -> req.body: hamster-objekt med id som skapas i db 
+router.post('/', async(req, res) => {
+    let body = await req.body
+    console.log('Inside router.post: req.body: ', body);
+    let newHamster = await addOne( body.name , body.age, body.favFood, body.loves, body.imgName, body.wins, body.defeats, body.games )
+    res.send(newHamster)
+})
+
 //FUNCTIONS
-//GET ALL
+
+//GET
 const getAll = async() => {
 	const hamstersRef = db.collection(HAMSTERS)
-
 	const hamstersSnapshot = await hamstersRef.get()
-    console.log(hamstersSnapshot);
 	if( hamstersSnapshot.empty ) {
 		return []
 	}
@@ -55,21 +62,44 @@ const getRandom = async() => {
     let array = await getAll()
     let randomNumber = Math.floor(Math.random()*array.length)
     let randomHamster =array[randomNumber];
-    console.log(randomHamster, randomNumber);
     return randomHamster
 }
 
 
 const getOne = async(id) => {
     const docRef = db.collection(HAMSTERS).doc(id)
-        const docSnapshot = await docRef.get()
-    
-        if( docSnapshot.exists ) {
-            return await docSnapshot.data()
-        } else {
-            return null
-        }
+    const docSnapshot = await docRef.get()
+    if( docSnapshot.exists ) {
+        return await docSnapshot.data()
+    } else {
+        return null
+    }
 }
+
+
+//POST 
+
+const addOne = async( name, age, favfood, loves, imgname, wins, defeats, games ) => {
+	const object = {
+        name: name,
+        age: age,
+        favFood: favfood,
+        loves: loves,
+        imgName: imgname,
+        wins: wins,
+        defeats: defeats,
+        games: games
+	}
+
+	const docRef = await db.collection(HAMSTERS).add(object)
+	console.log(`Added hamster named ${object.name} with id ${docRef.id}.`);
+    const idObject = {
+        id: docRef.id
+    }
+    return idObject;
+}
+
+
 
 
 module.exports = router
