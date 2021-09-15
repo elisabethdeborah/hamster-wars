@@ -31,15 +31,90 @@ router.get('/:id', async(req, res) => {
     }
 })
 
-//POST /hamsters -> req.body: hamster-objekt med id som skapas i db 
+//POST /hamsters -> req.body: hamster-objekt utan id. respons: objekt med id som skapas i db 
 router.post('/', async(req, res) => {
     let body = await req.body
-    console.log('Inside router.post: req.body: ', body);
-    let newHamster = await addOne( body.name , body.age, body.favFood, body.loves, body.imgName, body.wins, body.defeats, body.games )
+    
+    if (!isHamsterObject(body)) {
+        res.sendStatus(400)
+    } else {
+    let newHamster = await addOne( body.name, body.age, body.favFood, body.loves, body.imgName, body.wins, body.defeats, body.games )
     res.send(newHamster)
+    /*  await updateOne(req.params.id, wins, defeats, games)
+    res.sendStatus(200) */
+    }
+    
 })
 
+//PUT hamsters -> req.body: obj med ändringar. respons: statuskod
+router.put('/:id', async(req, res) => {
+    const maybeHamster = req.body
+    const wins = maybeHamster.wins 
+    const defeats = maybeHamster.defeats
+    const games = maybeHamster.games
+    //kontrollera att body är okej valideringsfunktion
+    if (!isHamsterUpdateObject(maybeHamster)) {
+        res.sendStatus(400)
+    }else {
+     await updateOne(req.params.id, wins, defeats, games)
+    res.sendStatus(200)
+    }
+})
+
+
 //FUNCTIONS
+//kontrollerar att det är ett korrekt och fullständigt hamsterobjekt
+const isHamsterObject = (body) => {
+    let values = Object.values(body)
+    let keys = Object.keys(body) 
+    let scores = [body.wins, body.defeats, body.games]
+    //TYPE ?
+    if ( (typeof body) !== 'object' ) {
+        return false 
+    }
+    //EMPTY STRING?
+    values.map(x => console.log(x, x.toString().split('').length))
+    let emptyValue = values.filter(x => (x.toString().split('')))
+    if (emptyValue.length <1) {
+        return false
+    } 
+    
+    //kontrollera att keys är korrekta
+    keys.map(x => console.log(x))
+    if (  !keys.includes('wins') || !keys.includes('defeats')  || !keys.includes('games') || !keys.includes('age') || !keys.includes('name') || !keys.includes('favFood') || !keys.includes('loves')|| !keys.includes('imgName')  ) {
+        return false   
+    } 
+    //kontrollera att numeriska värden är positiva
+    let filter = scores.filter( x => (x>=0 && typeof x === 'number' ))
+    return filter.length === 3 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+//Kollar att det är ett korrekt uppdateringsobjekt
+const isHamsterUpdateObject = (maybe) => {
+    if ( (typeof maybe) !== 'object' ) {
+        return false 
+    } 
+    let keys = Object.keys(maybe) 
+    let values = Object.values(maybe)
+    //kontrollera att keys är korrekta
+    if ( !keys.includes('wins') || !keys.includes('defeats') || !keys.includes('games') ) {
+        return false 
+    }
+    //kontrollera att värdena är positiva
+    let filter = values.filter( x => (x>=0 && typeof x === 'number' ))
+    return filter.length === 3 
+}
 
 //GET
 const getAll = async() => {
@@ -97,6 +172,20 @@ const addOne = async( name, age, favfood, loves, imgname, wins, defeats, games )
         id: docRef.id
     }
     return idObject;
+}
+
+//PUT
+
+
+const updateOne = async(id, wins, defeats, games) => {
+	const docRef = db.collection(HAMSTERS).doc(id)
+    const updates = {
+        wins: wins,
+        defeats: defeats,
+        games: games
+    }
+    const settings = { merge: true }
+	await docRef.set(updates, settings)
 }
 
 
