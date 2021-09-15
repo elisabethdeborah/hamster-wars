@@ -40,13 +40,11 @@ router.post('/', async(req, res) => {
     } else {
     let newHamster = await addOne( body.name, body.age, body.favFood, body.loves, body.imgName, body.wins, body.defeats, body.games )
     res.send(newHamster)
-    /*  await updateOne(req.params.id, wins, defeats, games)
-    res.sendStatus(200) */
     }
     
 })
 
-//PUT hamsters -> req.body: obj med ändringar. respons: statuskod
+//PUT hamsters/:id -> req.body: obj med ändringar. respons: statuskod
 router.put('/:id', async(req, res) => {
     const maybeHamster = req.body
     const wins = maybeHamster.wins 
@@ -61,6 +59,18 @@ router.put('/:id', async(req, res) => {
     }
 })
 
+//DELETE hamsters/:id -> respons: status
+router.delete('/:id', async(req, res) => {
+    let array = await deleteOne(req.params.id)
+    console.log('params: ', req.params.id, array);
+    if (array) {
+        res.sendStatus(200)
+    } else {
+        res.sendStatus(404)
+    }
+})
+
+
 
 //FUNCTIONS
 //kontrollerar att det är ett korrekt och fullständigt hamsterobjekt
@@ -73,14 +83,12 @@ const isHamsterObject = (body) => {
         return false 
     }
     //EMPTY STRING?
-    values.map(x => console.log(x, x.toString().split('').length))
     let emptyValue = values.filter(x => (x.toString().split('')))
     if (emptyValue.length <1) {
         return false
     } 
     
     //kontrollera att keys är korrekta
-    keys.map(x => console.log(x))
     if (  !keys.includes('wins') || !keys.includes('defeats')  || !keys.includes('games') || !keys.includes('age') || !keys.includes('name') || !keys.includes('favFood') || !keys.includes('loves')|| !keys.includes('imgName')  ) {
         return false   
     } 
@@ -115,6 +123,10 @@ const isHamsterUpdateObject = (maybe) => {
     let filter = values.filter( x => (x>=0 && typeof x === 'number' ))
     return filter.length === 3 
 }
+
+
+
+
 
 //GET
 const getAll = async() => {
@@ -189,6 +201,23 @@ const updateOne = async(id, wins, defeats, games) => {
 }
 
 
+//DELETE
+
+
+const deleteOne = async(id) => {
+	console.log('Deleting a document...');
+
+	const docRef = db.collection(HAMSTERS).doc(id)
+	const docSnapshot = await docRef.get()
+	console.log('Document exists? ', docSnapshot.exists);
+    if( docSnapshot.exists ) {
+         await docRef.delete()
+         return true
+    } else {
+        return false
+    }
+	
+}
 
 
 module.exports = router
