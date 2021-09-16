@@ -2,6 +2,7 @@
 const express = require('express')
 const app = express()
 const hamstersRouter = require('./routes/hamsters.js')
+const cutestRouter = require('./routes/cutest.js')
 const path = require('path')
 
 //konfigurera
@@ -27,7 +28,7 @@ app.use((req, res, next) => {
 app.use('/hamsters', hamstersRouter) 
 
 //CUTEST
-
+app.use('/cutest', cutestRouter) 
 
 //Starta servern
 

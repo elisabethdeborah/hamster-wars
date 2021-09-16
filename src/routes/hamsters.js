@@ -52,7 +52,7 @@ router.put('/:id', async(req, res) => {
     const games = maybeHamster.games
     //kontrollera att body är okej valideringsfunktion
     if (!isHamsterUpdateObject(maybeHamster)) {
-        res.sendStatus(400)
+        res.sendStatus(404)
     }else {
      await updateOne(req.params.id, wins, defeats, games)
     res.sendStatus(200)
@@ -187,7 +187,6 @@ const addOne = async( name, age, favfood, loves, imgname, wins, defeats, games )
 }
 
 //PUT
-
 
 const updateOne = async(id, wins, defeats, games) => {
 	const docRef = db.collection(HAMSTERS).doc(id)
