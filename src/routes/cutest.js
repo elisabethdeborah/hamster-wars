@@ -7,8 +7,7 @@ const db = connect()
 
 const HAMSTERS = 'hamsters'
 
-//GET /cutest -> objekt för den hamster som vunnit högst PROCENT!!!!!!
-// av sina matcher
+//GET /cutest -> objekt för den hamster som vunnit högst procent av sina matcher
 
 router.get('/', async(req, res) => { 
     let array = await getCutest()
@@ -30,18 +29,11 @@ const getCutest = async() => {
 		array.push(data)
 	})
 
-    array.map(hamster => {
-        let percentage = (hamster.wins/hamster.games)*100
-        if( percentage > 0) {
-            console.log(hamster.name, ' wins:', hamster.wins, '| games:', hamster.games, '| procent:', percentage);
-        }
-    })
     array.sort((a, b) => {
         let aPercentage = (Number(a.wins) / Number(a.games))*100
         let bPercentage = (Number(b.wins) / Number(b.games))*100
         return bPercentage - aPercentage
     })
-    //console.log(array);
     return array[0]
 }
 

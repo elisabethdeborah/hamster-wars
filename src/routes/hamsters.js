@@ -215,7 +215,6 @@ const deleteOne = async(id) => {
     } else {
         return false
     }
-	
 }
 
 
