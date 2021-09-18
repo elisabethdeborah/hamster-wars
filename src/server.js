@@ -1,10 +1,13 @@
 
 const express = require('express')
+var cors = require('cors')
 const app = express()
 const hamstersRouter = require('./routes/hamsters.js')
 const cutestRouter = require('./routes/cutest.js')
 const matchesRouter = require('./routes/matches.js')
-const path = require('path')
+const matchWinnersRouter = require('./routes/matchWinners.js')
+ 
+
 
 //konfigurera
 const PORT = process.env.PORT || 1337
@@ -12,6 +15,8 @@ const PORT = process.env.PORT || 1337
 //middleware
 app.use( express.urlencoded( {extended: true}) ) 
 app.use ( express.json() )
+app.use(cors())
+
 
 //logger-middleware
 app.use((req, res, next) => {
@@ -20,12 +25,9 @@ app.use((req, res, next) => {
 })
 
 //serva statiska filer
-/* //VARFÖR???????VARFÖR???????VARFÖR???????VARFÖR???????VARFÖR???????VARFÖR???????VARFÖR???????
-app.use('/:filnamn', express.static(__dirname+'/../public'))
-//VARFÖR???????VARFÖR???????VARFÖR???????VARFÖR???????VARFÖR???????VARFÖR???????VARFÖR???????
-app.use('/img:filnamn', express.static(__dirname+'/hamsters')) 
-//VARFÖR???????VARFÖR???????VARFÖR???????VARFÖR???????VARFÖR???????VARFÖR???????VARFÖR???????
- */
+
+app.use('/img', express.static(__dirname+'/hamsters')) 
+ app.use('/', express.static(__dirname+'/../public')) 
 
 
 //routes / endpoints
@@ -37,7 +39,7 @@ app.use('/cutest', cutestRouter)
 
 //MATCHES
 app.use('/matches', matchesRouter)
-
+app.use('/matchWinners', matchWinnersRouter)
 //Starta servern
 
 app.listen(PORT, () => {
