@@ -11,7 +11,12 @@ const HAMSTERS ='hamsters'
 //GET /matches -> respons: array med alla matchobject
 router.get('/', async(req, res) => { 
     let array = await getAllMatches()
-    res.send(array)
+    
+    if ( array.length > 0 ) {
+        res.send(array)
+    } else {
+        res.sendStatus(404)
+    }
 })
 
 //GET /matches:id -> respons: matchobjekt med ett specifikt id
@@ -49,10 +54,6 @@ router.delete('/:id', async(req, res) => {
 })
 
 
-
-
-
-
 //FUNCTIONS
 const isMatchObject = (body) => {
     console.log('body in ismatchobj: ', body);
@@ -74,7 +75,38 @@ const isMatchObject = (body) => {
     return notEmpty
 }
 
+const updateMatchResults = async(winnerId, loserId) => {
+    //update winner hamster-object
+    
+    const winnerRef = db.collection(HAMSTERS).doc(winnerId)
+    const winnerSnapShot = await winnerRef.get()
+    const winnerData = winnerSnapShot.data()
+    console.log('winnerData: ', winnerData, winnerData.wins, winnerData.games);
 
+    const winnerUpdates = {
+        wins: winnerData.wins+1,
+        games: winnerData.games+1
+    }
+
+    const winnerSettings = { merge: true }
+	await winnerRef.set(winnerUpdates, winnerSettings) 
+
+
+    //update loser hamster-object
+    const loserRef = db.collection(HAMSTERS).doc(loserId)
+    const loserSnapShot = await loserRef.get()
+    const loserData = loserSnapShot.data()
+    console.log('loserData: ', loserData, loserData.defeats, loserData.games);
+  
+    const loserUpdates = {
+        defeats: loserData.defeats+1,
+        games: loserData.games+1
+    }
+
+    const loserSettings = { merge: true }
+	await loserRef.set(loserUpdates, loserSettings)
+
+}
 
 
 //GET
@@ -106,7 +138,9 @@ const getOne = async(id) => {
 
 //POST
 const addMatch = async( winnerId, loserId ) => {
-	const object = {
+
+    //add ny match-object
+    const object = {
         winnerId: winnerId,
         loserId: loserId
 	}
@@ -116,6 +150,8 @@ const addMatch = async( winnerId, loserId ) => {
     const idObject = {
         id: docRef.id
     }
+    updateMatchResults(winnerId, loserId)
+
     return idObject;
 }
 
@@ -135,9 +171,6 @@ const deleteMatch = async(id) => {
     }
 	
 }
-
-
-///SENARE: GET /MATCHWINNERS, /WINNERS /LOSERS
 
 
 module.exports = router
