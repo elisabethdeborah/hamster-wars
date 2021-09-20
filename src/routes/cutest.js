@@ -30,10 +30,12 @@ const getCutest = async() => {
 	})
 
     array.sort((a, b) => {
-        let aPercentage = (Number(a.wins) / Number(a.games))*100
-        let bPercentage = (Number(b.wins) / Number(b.games))*100
-        return bPercentage - aPercentage
+        let aDiff = a.wins-a.defeats
+        let bDiff = b.wins-b.defeats
+		console.log(a.name, aDiff, b.name, bDiff);
+        return bDiff - aDiff
     })
+	console.log('array i ordning: ', array);
     return array[0]
 }
 
