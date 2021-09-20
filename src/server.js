@@ -6,7 +6,8 @@ const hamstersRouter = require('./routes/hamsters.js')
 const cutestRouter = require('./routes/cutest.js')
 const matchesRouter = require('./routes/matches.js')
 const matchWinnersRouter = require('./routes/matchWinners.js')
- 
+const winnersRouter = require('./routes/winners.js')
+const losersRouter = require('./routes/losers.js') 
 
 
 //konfigurera
@@ -40,6 +41,14 @@ app.use('/cutest', cutestRouter)
 //MATCHES
 app.use('/matches', matchesRouter)
 app.use('/matchWinners', matchWinnersRouter)
+
+//WINNERS
+app.use('/winners', winnersRouter)
+
+//LOSERS
+app.use('/losers', losersRouter)
+
+
 //Starta servern
 
 app.listen(PORT, () => {

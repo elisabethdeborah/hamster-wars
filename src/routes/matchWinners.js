@@ -49,6 +49,8 @@ router.get('/:id', async(req, res) => {
 
 
 const getWinnersMatches = async(id) => {
+
+    let allMatchesArray = []
     //all matches
     const matchesRef = db.collection(MATCHES)
     const hamserRef = db.collection(HAMSTERS).doc(id)
@@ -60,18 +62,18 @@ const getWinnersMatches = async(id) => {
 	if( hamsterSnapshot.empty ) {
 		return false
 	}
-    const allMatchesArray = []
+    
     //find matches from spec hamster
-    matchesSnapshot.forEach(async docRef => {
+    await matchesSnapshot.forEach(async docRef => {
 		const data = await docRef.data()
         if (data.winnerId === hamsterSnapshot.id) {
-            console.log('yes');
-            allMatchesArray.push(data)
-        } else {
-            console.log('no: ', hamsterSnapshot.id, data.winnerId);
-        }
-		console.log(data.winnerId);
+          //  console.log('yes: ', data);
+             allMatchesArray.push(data)
+        }/* 
+        console.log('allMatchesArray inside: ',  allMatchesArray);
+        return allMatchesArray */
 	})
+   // console.log('allMatchesArray: outside ',  allMatchesArray);
     if ( allMatchesArray.length > 0 ) {
         return allMatchesArray
     } else {

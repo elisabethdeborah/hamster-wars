@@ -18,10 +18,6 @@ async function populate() {
     data.forEach(object => {
         console.log(object);
         delete object.id
-       /*  let newObject = { //kommer vara en kopia av objecten, med tillagd lastOnline-egenskap.
-            ...object, 
-            lastOnline: getTimestampNow()
-        } */
         console.log(object);
         db.collection(HAMSTERS).add(object)
     })
