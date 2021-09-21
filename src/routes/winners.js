@@ -29,13 +29,9 @@ const getTopWinners = async() => {
 		array.push(data)
 	})
 
-	array.sort((a, b) => {
-        return b.wins - a.wins
-    })
+	array.sort((a, b) =>  b.wins - a.wins)
 	
-	//console.log('winners array i ordning: ', array);
 	let topFive = array.slice(0, 5)
-    //console.log('topFive winners: ', topFive);
     return topFive;
 }
 

@@ -11,9 +11,8 @@ const HAMSTERS ='hamsters'
 //GET /matches -> respons: array med alla matchobject
 router.get('/', async(req, res) => { 
     let array = await getAllMatches()
-    
     if ( array.length > 0 ) {
-        res.send(array)
+        res.status(200).send(array)
     } else {
         res.sendStatus(404)
     }
@@ -23,7 +22,7 @@ router.get('/', async(req, res) => {
 router.get('/:id', async(req, res) => { 
     let matchIdExists = await getOne(req.params.id)
     if (matchIdExists) {
-        res.send(matchIdExists) 
+        res.status(200).send(matchIdExists) 
     } else {
         res.sendStatus(404)
     }
@@ -32,12 +31,11 @@ router.get('/:id', async(req, res) => {
 //POST /matches -> body: matchobjekt (utan id), respons: ett objekt med id för det nya objekt som skapats i db
 router.post('/', async(req, res) => {
     let body = await req.body
-    //console.log('body in router-function: ', body);
     if (!isMatchObject(body)) {
         res.sendStatus(400)
     } else {
     let newMatchObject = await addMatch( body.winnerId, body.loserId)
-    res.send(newMatchObject)
+    res.status(200).send(newMatchObject)
     }
 })
 
@@ -45,7 +43,6 @@ router.post('/', async(req, res) => {
 //DELETE /MATCHES/:ID -> respons: statuskod
 router.delete('/:id', async(req, res) => {
     let array = await deleteMatch(req.params.id)
-    //console.log('params: ', req.params.id, array);
     if (array) {
         res.sendStatus(200)
     } else {
@@ -56,7 +53,6 @@ router.delete('/:id', async(req, res) => {
 
 //FUNCTIONS
 const isMatchObject = (body) => {
-    //console.log('body in ismatchobj: ', body);
     let values = Object.values(body)
     let keys = Object.keys(body) 
     //TYPE ?
@@ -68,16 +64,13 @@ const isMatchObject = (body) => {
         console.log('keys: ', keys);
         return false   
     } 
-    //values.map(x=> console.log(typeof x, x.length))
     //kolla att id:n är inte tomma strängar
     let notEmpty = values[0].length && values[1].length > 0
-    //console.log(notEmpty );
     return notEmpty
 }
 
 const updateMatchResults = async(winnerId, loserId) => {
     //update winner hamster-object
-    
     const winnerRef = db.collection(HAMSTERS).doc(winnerId)
     const winnerSnapShot = await winnerRef.get()
     if (winnerSnapShot.exists ){
@@ -93,15 +86,12 @@ const updateMatchResults = async(winnerId, loserId) => {
     } else {
         return false
     }
-    
-
 
     //update loser hamster-object
     const loserRef = db.collection(HAMSTERS).doc(loserId)
     const loserSnapShot = await loserRef.get()
     if (loserSnapShot.exists) {
         const loserData = loserSnapShot.data()
-        //  console.log('loserData: ', loserData, loserData.defeats, loserData.games);
         
           const loserUpdates = {
               defeats: loserData.defeats+1,
@@ -113,8 +103,6 @@ const updateMatchResults = async(winnerId, loserId) => {
     } else {
         return false
     }
-   
-
 }
 
 
@@ -155,23 +143,21 @@ const addMatch = async( winnerId, loserId ) => {
 	}
 
 	const docRef = await db.collection(MATCHES).add(object)
-	//console.log(`Added a match with winner-ID: ${object.winnerId} and loser-ID: ${object.loserId}. Match-ID: ${docRef.id}.`);
+	console.log(`Added a match with winner-ID: ${object.winnerId} and loser-ID: ${object.loserId}. Match-ID: ${docRef.id}.`);
     const idObject = {
         id: docRef.id
     }
     updateMatchResults(winnerId, loserId)
-
     return idObject;
 }
 
 
 //DELETE
 const deleteMatch = async(id) => {
-	//console.log('Deleting match...');
+	console.log('Deleting match...');
 
 	const docRef = db.collection(MATCHES).doc(id)
 	const docSnapshot = await docRef.get()
-	//console.log('Match exists? ', docSnapshot.exists);
     if( docSnapshot.exists ) {
          await docRef.delete()
          return true

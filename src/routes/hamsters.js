@@ -54,7 +54,9 @@ router.post('/', async(req, res) => {
     if (!isHamsterObject(body)) {
         res.sendStatus(400)
     } else {
-    let newHamster = await addOne( body.name, body.age, body.favFood, body.loves, body.imgName, body.wins, body.defeats, body.games )
+    //let newHamster = await addOne( body.name, body.age, body.favFood, body.loves, body.imgName, body.wins, body.defeats, body.games )
+    let newHamster = await addOne( body )
+    
     res.status(200).send(newHamster)
     }
     
@@ -64,24 +66,19 @@ router.post('/', async(req, res) => {
 router.put('/:id', async(req, res) => {
     let isHamster = await getOne(req.params.id)
     const maybeHamster = req.body
-    /* const wins = maybeHamster.wins 
-    const defeats = maybeHamster.defeats
-    const games = maybeHamster.games */
-    
-   // console.log('id: :', req.params.id);
-    //console.log('body: ', maybeHamster);
-    //kontrollera att body är okej valideringsfunktion
     try {
+        //kontrollera att hamster med angivet id finns
         if (!isHamster) {
             res.sendStatus(404)
+        //kontrollera att body är okej valideringsfunktion
         }else if (!isHamsterUpdateObject(maybeHamster)) {
             res.sendStatus(400)
         } else {
         await updateOne(req.params.id, maybeHamster)
         res.sendStatus(200)
-    }
+        }
     } catch (error) {
-        console.log(error);
+        console.log('error: ', error);
     }
     
 })
@@ -96,13 +93,6 @@ router.delete('/:id', async(req, res) => {
         res.sendStatus(404)
     }
 })
-
-
-
-
-
-
-
 
 
 //FUNCTIONS
@@ -147,21 +137,35 @@ const isHamsterUpdateObject = (maybe) => {
     if ( (typeof maybe) !== 'object' ) {
         return false 
     } 
+    let possibleKeys = ['name', 'age', 'favFood', 'loves', 'imgName', 'wins', 'defeats', 'games']
     let keys = Object.keys(maybe) 
+    console.log('keys:', keys);
     let values = Object.values(maybe)
-    //kontrollera att keys är korrekta
-    if ( keys.includes('wins') || keys.includes('defeats') || keys.includes('games') ) {
-        return true 
-    } 
+    console.log('values: ', values);
 
-    //kontrollera att värdena är positiva
-  /*   let filter = values.filter( x => (x>=0 && typeof x === 'number' ))
-    if( filter.length === 3 ) {
-        return true
+    let numberKeys = [ 'wins', 'defeats', 'games', 'age']
+    let stringKeys = ['name', 'favFood', 'loves', 'imgName']
+   
+
+    //kontrollera att key ska finnas i objekt
+    if ( possibleKeys.some(x=>keys.includes(x)) ) {
+       console.log('possibleKeys match?: ', possibleKeys.some(x=>keys.includes(x)));
+           //kontrollerar att values är rätt type
+       let trueOrFalse = keys.map( key => {
+           console.log('key: ', key,maybe[key], 'is it a number?: ' ,typeof maybe[key] === 'number', 'is it a string?: ', typeof maybe[key] === 'string');
+           if (numberKeys.includes(key) && ( typeof maybe[key] === 'number')) {
+                console.log('number', typeof maybe[key] === 'number');
+                return true 
+           } else if (stringKeys.includes(key) && (typeof maybe[key] === 'string')) {
+                console.log('string', typeof maybe[key] === 'string');
+                return true
+           } 
+       })
+       console.log('trueOrFalse:', trueOrFalse[0]===0 );
+       return trueOrFalse[0]===true
+    } else {
+        return false
     }
-    else {
-        return true
-    } */
    
 }
 
@@ -206,20 +210,21 @@ const getOne = async(id) => {
 
 //POST 
 
-const addOne = async( name, age, favfood, loves, imgname, wins, defeats, games ) => {
+const addOne = async( body ) => {
 	const object = {
-        name: name,
-        age: age,
-        favFood: favfood,
-        loves: loves,
-        imgName: imgname,
-        wins: wins,
-        defeats: defeats,
-        games: games
+        name: body.name,
+        age: body.age,
+        favFood: body.favFood,
+        loves: body.loves,
+        imgName: body.imgName,
+        wins: body.wins,
+        defeats: body.defeats,
+        games: body.games
 	}
+    console.log(object);
 
 	const docRef = await db.collection(HAMSTERS).add(object)
-	//console.log(`Added hamster named ${object.name} with id ${docRef.id}.`);
+	console.log(`Added hamster named ${object.name} with id ${docRef.id}.`);
     const idObject = {
         id: docRef.id
     }
@@ -230,7 +235,6 @@ const addOne = async( name, age, favfood, loves, imgname, wins, defeats, games )
 
 const updateOne = async(id, maybeHamster) => {
 	const docRef = db.collection(HAMSTERS).doc(id)
-    //console.log('maybeHamster: ', maybeHamster);
     const updates = {
         wins: maybeHamster.wins,
         defeats: maybeHamster.defeats,
@@ -245,12 +249,12 @@ const updateOne = async(id, maybeHamster) => {
 
 
 const deleteOne = async(id) => {
-	//console.log('Deleting a document...');
+	
 
 	const docRef = db.collection(HAMSTERS).doc(id)
 	const docSnapshot = await docRef.get()
-	//console.log('Document exists? ', docSnapshot.exists);
     if( docSnapshot.exists ) {
+        console.log(`Deleting hamster with id ${id} ...`);
          await docRef.delete()
          return true
     } else {
@@ -259,7 +263,7 @@ const deleteOne = async(id) => {
 }
 
 
-
+// GET /HAMSTERS/CUTEST
 
 const getCutest = async() => {
 	const hamstersRef = db.collection(HAMSTERS)
@@ -281,10 +285,8 @@ const getCutest = async() => {
         return bDiff - aDiff
     })
 	let maxScore = array[0].wins-array[0].defeats
-	//console.log('maxScore: ', maxScore);
 
-	let allWinners = array.filter(x => x.wins-x.defeats=== maxScore)
-	//console.log('allWinners:',allWinners);
+	let allWinners = array.filter(x => x.wins-x.defeats === maxScore)
 
     return allWinners
 }

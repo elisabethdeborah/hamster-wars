@@ -3,7 +3,6 @@ const express = require('express')
 var cors = require('cors')
 const app = express()
 const hamstersRouter = require('./routes/hamsters.js')
-const cutestRouter = require('./routes/cutest.js')
 const matchesRouter = require('./routes/matches.js')
 const matchWinnersRouter = require('./routes/matchWinners.js')
 const winnersRouter = require('./routes/winners.js')
@@ -19,12 +18,6 @@ app.use ( express.json() )
 app.use(cors())
 
 
-//logger-middleware
-/* app.use((req, res, next) => {
-    console.log(`Method: ${req.method}, Url: ${req.url}, Body: ${req.body},  Params: ${req.params}`);
-    next()
-}) */
-
 //serva statiska filer
 
 app.use('/img', express.static(__dirname+'/hamsters')) 
@@ -34,9 +27,6 @@ app.use('/img', express.static(__dirname+'/hamsters'))
 //routes / endpoints
 //HAMSTERS
 app.use('/hamsters', hamstersRouter) 
-
-//CUTEST
-//app.use('/cutest', cutestRouter) 
 
 //MATCHES
 app.use('/matches', matchesRouter)

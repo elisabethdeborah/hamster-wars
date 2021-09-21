@@ -67,13 +67,9 @@ const getWinnersMatches = async(id) => {
     await matchesSnapshot.forEach(async docRef => {
 		const data = await docRef.data()
         if (data.winnerId === hamsterSnapshot.id) {
-          //  console.log('yes: ', data);
              allMatchesArray.push(data)
-        }/* 
-        console.log('allMatchesArray inside: ',  allMatchesArray);
-        return allMatchesArray */
+        }
 	})
-   // console.log('allMatchesArray: outside ',  allMatchesArray);
     if ( allMatchesArray.length > 0 ) {
         return allMatchesArray
     } else {
