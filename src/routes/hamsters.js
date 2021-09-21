@@ -161,7 +161,7 @@ const isHamsterUpdateObject = (maybe) => {
                 return true
            } 
        })
-       console.log('trueOrFalse:', trueOrFalse[0]===0 );
+       console.log('trueOrFalse:', trueOrFalse[0]===true );
        return trueOrFalse[0]===true
     } else {
         return false
@@ -211,20 +211,9 @@ const getOne = async(id) => {
 //POST 
 
 const addOne = async( body ) => {
-	const object = {
-        name: body.name,
-        age: body.age,
-        favFood: body.favFood,
-        loves: body.loves,
-        imgName: body.imgName,
-        wins: body.wins,
-        defeats: body.defeats,
-        games: body.games
-	}
-    console.log(object);
 
-	const docRef = await db.collection(HAMSTERS).add(object)
-	console.log(`Added hamster named ${object.name} with id ${docRef.id}.`);
+	const docRef = await db.collection(HAMSTERS).add(body)
+	console.log(`Added hamster named ${body.name} with id ${docRef.id}.`);
     const idObject = {
         id: docRef.id
     }
@@ -235,11 +224,7 @@ const addOne = async( body ) => {
 
 const updateOne = async(id, maybeHamster) => {
 	const docRef = db.collection(HAMSTERS).doc(id)
-    const updates = {
-        wins: maybeHamster.wins,
-        defeats: maybeHamster.defeats,
-        games: maybeHamster.games
-    }
+    //const updates = maybeHamster
     const settings = { merge: true }
 	return docRef.set(maybeHamster, settings)
 }
@@ -249,8 +234,6 @@ const updateOne = async(id, maybeHamster) => {
 
 
 const deleteOne = async(id) => {
-	
-
 	const docRef = db.collection(HAMSTERS).doc(id)
 	const docSnapshot = await docRef.get()
     if( docSnapshot.exists ) {
@@ -278,14 +261,15 @@ const getCutest = async() => {
 		data.id = docRef.id
 		array.push(data)
 	})
-
+    //sorterar alla hamstrar i fallande ordning baserat på diff
     array.sort((a, b) => {
         let aDiff = a.wins-a.defeats
         let bDiff = b.wins-b.defeats
         return bDiff - aDiff
     })
+    //högsta diff-värde
 	let maxScore = array[0].wins-array[0].defeats
-
+    //kollar om flera har samma score
 	let allWinners = array.filter(x => x.wins-x.defeats === maxScore)
 
     return allWinners
