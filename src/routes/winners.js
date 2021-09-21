@@ -11,7 +11,7 @@ const HAMSTERS = 'hamsters'
 
 router.get('/', async(req, res) => { 
     let array = await getTopWinners()
-    res.send(array)
+    res.status(200).send(array)
 })
 
 
@@ -30,14 +30,12 @@ const getTopWinners = async() => {
 	})
 
 	array.sort((a, b) => {
-        let aDiff = a.wins-a.defeats
-        let bDiff = b.wins-b.defeats
-		console.log(a.name, aDiff, b.name, bDiff);
-        return bDiff - aDiff
+        return b.wins - a.wins
     })
-	console.log('array i ordning: ', array);
+	
+	//console.log('winners array i ordning: ', array);
 	let topFive = array.slice(0, 5)
-
+    //console.log('topFive winners: ', topFive);
     return topFive;
 }
 

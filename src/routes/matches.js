@@ -32,7 +32,7 @@ router.get('/:id', async(req, res) => {
 //POST /matches -> body: matchobjekt (utan id), respons: ett objekt med id för det nya objekt som skapats i db
 router.post('/', async(req, res) => {
     let body = await req.body
-    console.log('body in router-function: ', body);
+    //console.log('body in router-function: ', body);
     if (!isMatchObject(body)) {
         res.sendStatus(400)
     } else {
@@ -45,7 +45,7 @@ router.post('/', async(req, res) => {
 //DELETE /MATCHES/:ID -> respons: statuskod
 router.delete('/:id', async(req, res) => {
     let array = await deleteMatch(req.params.id)
-    console.log('params: ', req.params.id, array);
+    //console.log('params: ', req.params.id, array);
     if (array) {
         res.sendStatus(200)
     } else {
@@ -56,7 +56,7 @@ router.delete('/:id', async(req, res) => {
 
 //FUNCTIONS
 const isMatchObject = (body) => {
-    console.log('body in ismatchobj: ', body);
+    //console.log('body in ismatchobj: ', body);
     let values = Object.values(body)
     let keys = Object.keys(body) 
     //TYPE ?
@@ -68,10 +68,10 @@ const isMatchObject = (body) => {
         console.log('keys: ', keys);
         return false   
     } 
-    values.map(x=> console.log(typeof x, x.length))
+    //values.map(x=> console.log(typeof x, x.length))
     //kolla att id:n är inte tomma strängar
     let notEmpty = values[0].length && values[1].length > 0
-    console.log(notEmpty );
+    //console.log(notEmpty );
     return notEmpty
 }
 
@@ -80,31 +80,40 @@ const updateMatchResults = async(winnerId, loserId) => {
     
     const winnerRef = db.collection(HAMSTERS).doc(winnerId)
     const winnerSnapShot = await winnerRef.get()
-    const winnerData = winnerSnapShot.data()
-    console.log('winnerData: ', winnerData, winnerData.wins, winnerData.games);
+    if (winnerSnapShot.exists ){
+        const winnerData = winnerSnapShot.data()
 
-    const winnerUpdates = {
-        wins: winnerData.wins+1,
-        games: winnerData.games+1
+        const winnerUpdates = {
+            wins: winnerData.wins+1,
+            games: winnerData.games+1
+        }
+    
+        const winnerSettings = { merge: true }
+        await winnerRef.set(winnerUpdates, winnerSettings) 
+    } else {
+        return false
     }
-
-    const winnerSettings = { merge: true }
-	await winnerRef.set(winnerUpdates, winnerSettings) 
+    
 
 
     //update loser hamster-object
     const loserRef = db.collection(HAMSTERS).doc(loserId)
     const loserSnapShot = await loserRef.get()
-    const loserData = loserSnapShot.data()
-    console.log('loserData: ', loserData, loserData.defeats, loserData.games);
-  
-    const loserUpdates = {
-        defeats: loserData.defeats+1,
-        games: loserData.games+1
+    if (loserSnapShot.exists) {
+        const loserData = loserSnapShot.data()
+        //  console.log('loserData: ', loserData, loserData.defeats, loserData.games);
+        
+          const loserUpdates = {
+              defeats: loserData.defeats+1,
+              games: loserData.games+1
+          }
+      
+          const loserSettings = { merge: true }
+          await loserRef.set(loserUpdates, loserSettings)
+    } else {
+        return false
     }
-
-    const loserSettings = { merge: true }
-	await loserRef.set(loserUpdates, loserSettings)
+   
 
 }
 
@@ -146,7 +155,7 @@ const addMatch = async( winnerId, loserId ) => {
 	}
 
 	const docRef = await db.collection(MATCHES).add(object)
-	console.log(`Added a match with winner-ID: ${object.winnerId} and loser-ID: ${object.loserId}. Match-ID: ${docRef.id}.`);
+	//console.log(`Added a match with winner-ID: ${object.winnerId} and loser-ID: ${object.loserId}. Match-ID: ${docRef.id}.`);
     const idObject = {
         id: docRef.id
     }
@@ -158,11 +167,11 @@ const addMatch = async( winnerId, loserId ) => {
 
 //DELETE
 const deleteMatch = async(id) => {
-	console.log('Deleting match...');
+	//console.log('Deleting match...');
 
 	const docRef = db.collection(MATCHES).doc(id)
 	const docSnapshot = await docRef.get()
-	console.log('Match exists? ', docSnapshot.exists);
+	//console.log('Match exists? ', docSnapshot.exists);
     if( docSnapshot.exists ) {
          await docRef.delete()
          return true

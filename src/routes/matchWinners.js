@@ -17,7 +17,7 @@ const HAMSTERS = 'hamsters'
 
 router.get('/:id', async(req, res) => { 
     let hasWonMatches = await getWinnersMatches(req.params.id)
-    console.log(req.params.id);
+    //console.log(req.params.id);
     if (hasWonMatches) {
         res.send(hasWonMatches) 
     } else {

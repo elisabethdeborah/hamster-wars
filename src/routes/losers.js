@@ -30,14 +30,11 @@ const getTopLosers = async() => {
 	})
 
 	array.sort((a, b) => {
-        let aDiff = a.wins-a.defeats
-        let bDiff = b.wins-b.defeats
-		console.log(a.name, aDiff, b.name, bDiff);
-        return aDiff - bDiff
+        return b.defeats - a.defeats
     })
-	console.log('array i ordning: ', array);
+	//console.log('losers array i ordning: ', array);
 	let topFive = array.slice(0, 5)
-
+    //console.log('topFive losers: ', topFive);
     return topFive;
 }
 

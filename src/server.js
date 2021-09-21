@@ -20,10 +20,10 @@ app.use(cors())
 
 
 //logger-middleware
-app.use((req, res, next) => {
+/* app.use((req, res, next) => {
     console.log(`Method: ${req.method}, Url: ${req.url}, Body: ${req.body},  Params: ${req.params}`);
     next()
-})
+}) */
 
 //serva statiska filer
 
@@ -36,7 +36,7 @@ app.use('/img', express.static(__dirname+'/hamsters'))
 app.use('/hamsters', hamstersRouter) 
 
 //CUTEST
-app.use('/cutest', cutestRouter) 
+//app.use('/cutest', cutestRouter) 
 
 //MATCHES
 app.use('/matches', matchesRouter)
