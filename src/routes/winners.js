@@ -1,4 +1,4 @@
-
+/* 
 
 const express = require('express')
 const router = express.Router()
@@ -31,8 +31,51 @@ const getTopWinners = async() => {
 
 	array.sort((a, b) =>  b.wins - a.wins)
 	
+	
 	let topFive = array.slice(0, 5)
+	console.log('topFive: ',topFive, 'array: ',array );
     return topFive;
+}
+
+
+module.exports = router */
+
+
+
+
+const express = require('express')
+const router = express.Router()
+const { connect } = require('../database.js') 
+const db = connect()
+
+const HAMSTERS = 'hamsters'
+
+//GET /cutest -> objekt för den hamster som vunnit högst procent av sina matcher
+
+router.get('/', async(req, res) => { 
+    let array = await getTopWinners()
+    res.send(array)
+})
+
+
+const getTopWinners = async() => {
+	const hamstersRef = db.collection(HAMSTERS)
+	const hamstersSnapshot = await hamstersRef.get()
+	if( hamstersSnapshot.empty ) {
+		return false
+	}
+
+	const array = []
+	await hamstersSnapshot.forEach(async docRef => {
+		const data = await docRef.data()
+		data.id = docRef.id
+		console.log(data.wins);
+		array.push(data)
+	})
+
+	array.sort((a, b) => b.wins - a.wins)
+	let topFive = array.slice(0, 5)
+    return array.slice(0, 5);
 }
 
 

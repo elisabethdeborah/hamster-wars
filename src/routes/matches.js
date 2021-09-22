@@ -61,7 +61,6 @@ const isMatchObject = (body) => {
     }
     //kontrollera att keys är korrekta
     if (  !keys.includes('winnerId') || !keys.includes('loserId') ) {
-        console.log('keys: ', keys);
         return false   
     } 
     //kolla att id:n är inte tomma strängar

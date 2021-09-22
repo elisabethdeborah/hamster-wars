@@ -7,10 +7,6 @@ const db = connect()
 
 const HAMSTERS = 'hamsters'
 
-const possibleKeys = ['name', 'age', 'favFood', 'loves', 'imgName', 'wins', 'defeats', 'games']
-const numberKeys = [ 'wins', 'defeats', 'games', 'age']
-const stringKeys = ['name', 'favFood', 'loves', 'imgName']
-
 //ENDPOINTS:
 
 //GET /hamsters -> array med alla hamsterobjekt
@@ -55,7 +51,7 @@ router.get('/:id', async(req, res) => {
 router.post('/', async(req, res) => {
     let body = await req.body
     
-    if (!isHamsterObject(body)) {
+    if (!isHamsterObject(body, 'every')) {
         res.sendStatus(400)
     } else {
     //let newHamster = await addOne( body.name, body.age, body.favFood, body.loves, body.imgName, body.wins, body.defeats, body.games )
@@ -75,7 +71,7 @@ router.put('/:id', async(req, res) => {
         if (!isHamster) {
             res.sendStatus(404)
         //kontrollera att body är okej valideringsfunktion
-        }else if (!isHamsterUpdateObject(maybeHamster)) {
+        }else if (!isHamsterObject(maybeHamster, 'some')) {
             res.sendStatus(400)
         } else {
         await updateOne(req.params.id, maybeHamster)
@@ -100,91 +96,53 @@ router.delete('/:id', async(req, res) => {
 
 
 //FUNCTIONS
-//kontrollerar att det är ett korrekt och fullständigt hamsterobjekt
-const isHamsterObject = (body) => {
+//kontrollerar att det är ett korrekt hamsterobjekt
 
-//    let possibleKeys = ['name', 'age', 'favFood', 'loves', 'imgName', 'wins', 'defeats', 'games']
 
-    let values = Object.values(body)
-
-    let keys = Object.keys(body) 
-    console.log('keys: ', keys );
-    let allKeysExists = possibleKeys.every(key => keys.includes(key))
-    console.log('allKeysExists: ', allKeysExists, possibleKeys.every(key => keys.includes(key)));
-    values.map(x => console.log(x.toString().length>0, x.key))
-    let scores = [body.wins, body.defeats, body.games]
-    //TYPE ?
+const isHamsterObject = (body, option) => {
+    //BODY IS OBJECT ?
     if ( (typeof body) !== 'object' ) {
         return false 
     }
-    //EMPTY STRING?
-    let emptyValue = values.filter(x => (x.toString().split('')))
-    if (emptyValue.length <1) {
-        return false
-    } 
-    
-    //kontrollera att keys är korrekta
-    if (  !keys.includes('wins') || !keys.includes('defeats')  || !keys.includes('games') || !keys.includes('age') || !keys.includes('name') || !keys.includes('favFood') || !keys.includes('loves')|| !keys.includes('imgName')  ) {
-        return false   
-    } 
 
-
-
-    //kontrollera att numeriska värden är positiva
-    let filter = scores.filter( x => (x>=0 && typeof x === 'number' ))
-    return filter.length === 3 
-}
-
-
-
-
-
-
-
-
-
-
-
-
-//Kollar att det är ett korrekt uppdateringsobjekt
-const isHamsterUpdateObject = (maybe) => {
-    
-    if ( (typeof maybe) !== 'object' ) {
-        return false 
-    } 
-    let possibleKeys = ['name', 'age', 'favFood', 'loves', 'imgName', 'wins', 'defeats', 'games']
-    let keys = Object.keys(maybe) 
-    console.log('keys:', keys);
-    let values = Object.values(maybe)
-    console.log('values: ', values);
-/* 
+    const possibleKeys = ['name', 'age', 'favFood', 'loves', 'imgName', 'wins', 'defeats', 'games']
     let numberKeys = [ 'wins', 'defeats', 'games', 'age']
-    let stringKeys = ['name', 'favFood', 'loves', 'imgName'] */
-   
+    let stringKeys = ['name', 'favFood', 'loves', 'imgName']
 
-    //kontrollera att key ska finnas i objekt
-    if ( possibleKeys.some(x=>keys.includes(x)) ) {
-       console.log('possibleKeys match?: ', possibleKeys.some(x=>keys.includes(x)));
-           //kontrollerar att values är rätt type, och ej tom sträng
-       let trueOrFalse = keys.map( key => {
-         //  console.log('key: ', key,maybe[key], 'is it a number?: ' ,typeof maybe[key] === 'number', 'is it a string?: ', typeof maybe[key] === 'string');
-           if (numberKeys.includes(key) && ( typeof maybe[key] === 'number')) {
-          //      console.log('number', typeof maybe[key] === 'number');
-                return true 
-           } else if (stringKeys.includes(key) && (typeof maybe[key] === 'string') && maybe[key].length > 0) {
-           //     console.log('string', typeof maybe[key] === 'string', maybe[key].length);
-                return true
-           } 
-       })
-     //  console.log('trueOrFalse:', trueOrFalse[0]===true );
-       return trueOrFalse[0]===true
-    } else {
-        return false
+    let values = Object.values(body)
+    let keys = Object.keys(body) 
+    //kontrollera att keys är korrekta, post= alla keys, put= minst en key
+    let allKeysExist = possibleKeys.every( key => keys.includes(key) )
+    let someKeysExist = possibleKeys.some( key => keys.includes(key) )
+    //ny array med siffror, ny med strängar
+    if ( !allKeysExist && someKeysExist ) {
+        numberKeys = keys.filter(key => numberKeys.includes(key))
+        stringKeys = keys.filter(key => stringKeys.includes(key))
     }
-   
+    
+    //kontrollerar types
+    let numberType = numberKeys.every(key=> {
+        return typeof body[key] === 'number' && body[key] >= 0
+    })
+
+    let stringType = stringKeys.every(key=> {   
+        return typeof body[key] === 'string'
+    })
+
+    //kontrollerar att inga values är tomma
+    let noEmptyValues = values.every( x => x.toString().length > 0 )
+
+    console.log('numberType: ', numberType, 'stringType: ', stringType, 'noEmptyValues: ', noEmptyValues, 'allKeysExist: ', noEmptyValues);
+    //POST
+    if ( option === 'every' ) {
+        console.log('Option: ', option);
+        return numberType && stringType && noEmptyValues && allKeysExist
+    //PUT
+    } else if ( option === 'some' ) {
+        console.log('Option: ', option);
+        return numberType && stringType && noEmptyValues && someKeysExist
+    }
 }
-
-
 
 
 
@@ -239,7 +197,7 @@ const addOne = async( body ) => {
 
 const updateOne = async(id, maybeHamster) => {
 	const docRef = db.collection(HAMSTERS).doc(id)
-    //const updates = maybeHamster
+    console.log(`Updated hamster named ${maybeHamster.name} with id ${docRef.id}.`);
     const settings = { merge: true }
 	return docRef.set(maybeHamster, settings)
 }
