@@ -8,11 +8,15 @@ const db = connect()
 const HAMSTERS = 'hamsters'
 
 
-//GET /cutest -> objekt för den hamster som vunnit högst procent av sina matcher
+//GET /manyMatches - returnera en array med id för de hamstrar som spelat flest antal matcher. Minst ett element
 
 router.get('/', async(req, res) => { 
     let array = await getMany()
+    if (array.length > 0) {
     res.status(200).send(array)
+    } else {
+        res.sendStatus(404)
+    }
 })
 
 

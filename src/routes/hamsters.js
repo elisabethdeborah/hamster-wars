@@ -23,7 +23,11 @@ router.get('/', async(req, res) => {
 
 router.get('/cutest', async(req, res) => { 
     let array = await getCutest()
-    res.status(200).send(array)
+    if (array) {
+        res.status(200).send(array)
+    } else {
+        res.sendStatus(404)
+    }
 })
 
 //GET /hamsters/random -> slumpat hamsterobj
