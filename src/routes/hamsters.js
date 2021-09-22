@@ -7,6 +7,10 @@ const db = connect()
 
 const HAMSTERS = 'hamsters'
 
+const possibleKeys = ['name', 'age', 'favFood', 'loves', 'imgName', 'wins', 'defeats', 'games']
+const numberKeys = [ 'wins', 'defeats', 'games', 'age']
+const stringKeys = ['name', 'favFood', 'loves', 'imgName']
+
 //ENDPOINTS:
 
 //GET /hamsters -> array med alla hamsterobjekt
@@ -98,8 +102,16 @@ router.delete('/:id', async(req, res) => {
 //FUNCTIONS
 //kontrollerar att det är ett korrekt och fullständigt hamsterobjekt
 const isHamsterObject = (body) => {
+
+//    let possibleKeys = ['name', 'age', 'favFood', 'loves', 'imgName', 'wins', 'defeats', 'games']
+
     let values = Object.values(body)
+
     let keys = Object.keys(body) 
+    console.log('keys: ', keys );
+    let allKeysExists = possibleKeys.every(key => keys.includes(key))
+    console.log('allKeysExists: ', allKeysExists, possibleKeys.every(key => keys.includes(key)));
+    values.map(x => console.log(x.toString().length>0, x.key))
     let scores = [body.wins, body.defeats, body.games]
     //TYPE ?
     if ( (typeof body) !== 'object' ) {
@@ -115,6 +127,9 @@ const isHamsterObject = (body) => {
     if (  !keys.includes('wins') || !keys.includes('defeats')  || !keys.includes('games') || !keys.includes('age') || !keys.includes('name') || !keys.includes('favFood') || !keys.includes('loves')|| !keys.includes('imgName')  ) {
         return false   
     } 
+
+
+
     //kontrollera att numeriska värden är positiva
     let filter = scores.filter( x => (x>=0 && typeof x === 'number' ))
     return filter.length === 3 
@@ -142,26 +157,26 @@ const isHamsterUpdateObject = (maybe) => {
     console.log('keys:', keys);
     let values = Object.values(maybe)
     console.log('values: ', values);
-
+/* 
     let numberKeys = [ 'wins', 'defeats', 'games', 'age']
-    let stringKeys = ['name', 'favFood', 'loves', 'imgName']
+    let stringKeys = ['name', 'favFood', 'loves', 'imgName'] */
    
 
     //kontrollera att key ska finnas i objekt
     if ( possibleKeys.some(x=>keys.includes(x)) ) {
        console.log('possibleKeys match?: ', possibleKeys.some(x=>keys.includes(x)));
-           //kontrollerar att values är rätt type
+           //kontrollerar att values är rätt type, och ej tom sträng
        let trueOrFalse = keys.map( key => {
-           console.log('key: ', key,maybe[key], 'is it a number?: ' ,typeof maybe[key] === 'number', 'is it a string?: ', typeof maybe[key] === 'string');
+         //  console.log('key: ', key,maybe[key], 'is it a number?: ' ,typeof maybe[key] === 'number', 'is it a string?: ', typeof maybe[key] === 'string');
            if (numberKeys.includes(key) && ( typeof maybe[key] === 'number')) {
-                console.log('number', typeof maybe[key] === 'number');
+          //      console.log('number', typeof maybe[key] === 'number');
                 return true 
-           } else if (stringKeys.includes(key) && (typeof maybe[key] === 'string')) {
-                console.log('string', typeof maybe[key] === 'string');
+           } else if (stringKeys.includes(key) && (typeof maybe[key] === 'string') && maybe[key].length > 0) {
+           //     console.log('string', typeof maybe[key] === 'string', maybe[key].length);
                 return true
            } 
        })
-       console.log('trueOrFalse:', trueOrFalse[0]===true );
+     //  console.log('trueOrFalse:', trueOrFalse[0]===true );
        return trueOrFalse[0]===true
     } else {
         return false
