@@ -12,8 +12,7 @@ const manyMatchesRouter = require('./routes/manyMatches.js')
 const defeatedRouter = require('./routes/defeated.js')
 const scoreRouter = require('./routes/score.js')
 
-
-//konfigurera
+//konfigurera app
 const PORT = process.env.PORT || 1337
 
 //middleware
