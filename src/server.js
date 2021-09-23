@@ -10,6 +10,7 @@ const losersRouter = require('./routes/losers.js')
 const fewMatchesRouter = require('./routes/fewMatches.js')
 const manyMatchesRouter = require('./routes/manyMatches.js')
 const defeatedRouter = require('./routes/defeated.js')
+const scoreRouter = require('./routes/score.js')
 
 
 //konfigurera
@@ -49,6 +50,9 @@ app.use('/fewMatches', fewMatchesRouter)
 
 //DEAFETED
 app.use('/defeated', defeatedRouter)
+
+//SCORE
+app.use('/score', scoreRouter)
 
 //Starta servern
 
