@@ -30,6 +30,7 @@ const getMany = async() => {
 	const array = []
 	await hamstersSnapshot.forEach(async docRef => {
 		const data = await docRef.data()
+        data.id = docRef.id
 		array.push(data)
 	})
     //sorterar alla hamstrar i fallande ordning baserat på diff
