@@ -90,7 +90,6 @@ router.put('/:id', async(req, res) => {
 //DELETE hamsters/:id -> respons: status
 router.delete('/:id', async(req, res) => {
     let array = await deleteOne(req.params.id)
-    //console.log('params: ', req.params.id, array);
     if (array) {
         res.sendStatus(200)
     } else {
@@ -136,14 +135,11 @@ const isHamsterObject = (body, option) => {
     //kontrollerar att inga values är tomma
     let noEmptyValues = values.every( x => x.toString().length > 0 )
 
-    console.log('numberType: ', numberType, 'stringType: ', stringType, 'noEmptyValues: ', noEmptyValues, 'allKeysExist: ', noEmptyValues);
     //POST
     if ( option === 'every' ) {
-        console.log('Option: ', option);
         return numberType && stringType && noEmptyValues && allKeysExist
     //PUT
     } else if ( option === 'some' ) {
-        console.log('Option: ', option);
         return numberType && stringType && noEmptyValues && someKeysExist
     }
 }

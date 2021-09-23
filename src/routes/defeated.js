@@ -31,12 +31,10 @@ const getDefeated = async(id) => {
         return []
     } 
         let hamsterData = await docSnapshot.data()
-         console.log('hamsterData:', hamsterData);
 
          let array = []
         await matchesSnapshot.forEach(async docRef => {
             const matchData = await docRef.data()
-            console.log('winnerId: ', matchData.winnerId, 'valdId: ', id, 'loserId: ', matchData.loserId );
             if(matchData.winnerId === id) {
                 array.push(matchData.loserId)
             }

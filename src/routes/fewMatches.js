@@ -36,10 +36,8 @@ const getFew = async() => {
     array.sort((a, b) => a.games-b.games)
     //högsta diff-värde
 	let lowestCount = array[0].games
-    console.log('array: ',array, 'lowest: ', lowestCount);
     //kollar om flera har samma score
 	let allLowest = array.filter(x => x.games === lowestCount)
-    console.log(allLowest);
 
     return allLowest
 }

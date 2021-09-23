@@ -37,10 +37,8 @@ const getMany = async() => {
     array.sort((a, b) => b.games-a.games)
     //högsta diff-värde
 	let highestCount = array[0].games
-    console.log('array: ',array, 'highest: ', highestCount);
     //kollar om flera har samma score
 	let allHighest = array.filter(x => x.games === highestCount)
-    console.log(allHighest);
 
     return allHighest
 }

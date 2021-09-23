@@ -14,38 +14,14 @@ const HAMSTERS = 'hamsters'
 
 
 
-
 router.get('/:id', async(req, res) => { 
     let hasWonMatches = await getWinnersMatches(req.params.id)
-    //console.log(req.params.id);
     if (hasWonMatches) {
         res.send(hasWonMatches) 
     } else {
         res.sendStatus(404)
     }
-    //res.send(array)
 })
-
-//HÄMTA HAMSTER-OBJ. 
-//KOLLA ATT HAMSTER.WINS ÄR > 0 
-//OM WINS < 1 RETURNERA 404
-//ANNARS:
-//HÄMTA ALLA MATCHER
-//LOOPA IGENOM MATCHERNAS WINNER-ID:S OCH
-//MATCHA WINNER-ID:S MED HAMSTER-ID
-//PUSHA VUNNA MATCHER TILL ARRAY
-
-//GET
-/* const getAllMatches = async() => {
-    const docRef = db.collection(HAMSTERS).doc(id)
-    const docSnapshot = await docRef.get()
-    if( docSnapshot.exists ) {
-        return await docSnapshot.data()
-    } 
-	
-} */
-
-
 
 
 const getWinnersMatches = async(id) => {

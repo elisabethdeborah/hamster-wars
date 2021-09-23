@@ -9,7 +9,6 @@ if ( process.env.PRIVATE_KEY ) {
 	privateKey =  require("./secrets/firebase-key.json");
 }
 
-//var serviceAccount = require("./secrets/firebase-key.json");
 
 function connect() {
     const app = !admin.apps.length ? admin.initializeApp({
