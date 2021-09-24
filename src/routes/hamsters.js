@@ -13,7 +13,7 @@ const HAMSTERS = 'hamsters'
 router.get('/', async(req, res) => { 
     let array = await getAll()
     if (array) {
-        res.send(array)
+        res.status(200).send(array)
     } else {
         res.sendStatus(404)
     }
@@ -35,7 +35,7 @@ router.get('/random', async(req, res) => {
     let hamster = await getRandom()
    // res.send(hamster)
     if (hamster) {
-        res.send(hamster)
+        res.status(200).send(hamster)
     } else {
         res.sendStatus(404)
     }
@@ -58,7 +58,6 @@ router.post('/', async(req, res) => {
     if (!isHamsterObject(body, 'every')) {
         res.sendStatus(400)
     } else {
-    //let newHamster = await addOne( body.name, body.age, body.favFood, body.loves, body.imgName, body.wins, body.defeats, body.games )
     let newHamster = await addOne( body )
     
     res.status(200).send(newHamster)
@@ -98,10 +97,10 @@ router.delete('/:id', async(req, res) => {
 })
 
 
+
 //FUNCTIONS
-//kontrollerar att det är ett korrekt hamsterobjekt
 
-
+//validering, kontrollerar att det är ett korrekt hamsterobjekt
 const isHamsterObject = (body, option) => {
     //BODY IS OBJECT ?
     if ( (typeof body) !== 'object' ) {
@@ -153,7 +152,6 @@ const getAll = async() => {
 	if( hamstersSnapshot.empty ) {
 		return []
 	}
-
 	const array = []
 	await hamstersSnapshot.forEach(async docRef => {
 		const data = await docRef.data()
@@ -162,6 +160,7 @@ const getAll = async() => {
 	})
     return array
 }
+
 
 const getRandom = async() => {
     let array = await getAll()
@@ -184,7 +183,6 @@ const getOne = async(id) => {
 //POST 
 
 const addOne = async( body ) => {
-
 	const docRef = await db.collection(HAMSTERS).add(body)
 	console.log(`Added hamster named ${body.name} with id ${docRef.id}.`);
     const idObject = {
@@ -192,6 +190,7 @@ const addOne = async( body ) => {
     }
     return idObject;
 }
+
 
 //PUT
 
@@ -204,7 +203,6 @@ const updateOne = async(id, maybeHamster) => {
 
 
 //DELETE
-
 
 const deleteOne = async(id) => {
 	const docRef = db.collection(HAMSTERS).doc(id)
@@ -227,7 +225,6 @@ const getCutest = async() => {
 	if( hamstersSnapshot.empty ) {
 		return false
 	}
-
 	const array = []
 	await hamstersSnapshot.forEach(async docRef => {
 		const data = await docRef.data()

@@ -30,7 +30,6 @@ const getDefeated = async(id) => {
     if( docSnapshot.empty ) {
         return []
     } 
-        let hamsterData = await docSnapshot.data()
 
          let array = []
         await matchesSnapshot.forEach(async docRef => {
@@ -39,7 +38,6 @@ const getDefeated = async(id) => {
                 array.push(matchData.loserId)
             }
         })
-        console.log('array: ',array);
         return array
 }
 

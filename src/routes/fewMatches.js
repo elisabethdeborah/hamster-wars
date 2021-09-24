@@ -11,7 +11,7 @@ const HAMSTERS = 'hamsters'
 //GET /fewMatches - returnera en array med id för de hamstrar som spelat minst antal matcher. Minst ett element
 
 router.get('/', async(req, res) => { 
-    let array = await getMany()
+    let array = await getFew()
     if (array.length > 0) {
     res.status(200).send(array)
     } else {
@@ -38,7 +38,7 @@ const getFew = async() => {
 	let lowestCount = array[0].games
     //kollar om flera har samma score
 	let allLowest = array.filter(x => x.games === lowestCount)
-
+    
     return allLowest
 }
 

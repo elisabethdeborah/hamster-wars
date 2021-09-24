@@ -68,35 +68,33 @@ const isMatchObject = (body) => {
     return notEmpty
 }
 
+
 const updateMatchResults = async(winnerId, loserId) => {
     //update winner hamster-object
     const winnerRef = db.collection(HAMSTERS).doc(winnerId)
     const winnerSnapShot = await winnerRef.get()
     if (winnerSnapShot.exists ){
         const winnerData = winnerSnapShot.data()
-
+    //object med uppdateringar för winnaren
         const winnerUpdates = {
             wins: winnerData.wins+1,
             games: winnerData.games+1
-        }
-    
+        } 
         const winnerSettings = { merge: true }
         await winnerRef.set(winnerUpdates, winnerSettings) 
     } else {
         return false
     }
-
     //update loser hamster-object
     const loserRef = db.collection(HAMSTERS).doc(loserId)
     const loserSnapShot = await loserRef.get()
     if (loserSnapShot.exists) {
         const loserData = loserSnapShot.data()
-        
+    //object med uppdateringar för förloraren
           const loserUpdates = {
               defeats: loserData.defeats+1,
               games: loserData.games+1
           }
-      
           const loserSettings = { merge: true }
           await loserRef.set(loserUpdates, loserSettings)
     } else {
@@ -112,7 +110,6 @@ const getAllMatches = async() => {
 	if( matchesSnapshot.empty ) {
 		return []
 	}
-
 	const array = []
 	matchesSnapshot.forEach(async docRef => {
 		const data = await docRef.data()
@@ -132,15 +129,14 @@ const getOne = async(id) => {
     }
 }
 
+
 //POST
 const addMatch = async( winnerId, loserId ) => {
-
     //add ny match-object
     const object = {
         winnerId: winnerId,
         loserId: loserId
 	}
-
 	const docRef = await db.collection(MATCHES).add(object)
 	console.log(`Added a match with winner-ID: ${object.winnerId} and loser-ID: ${object.loserId}. Match-ID: ${docRef.id}.`);
     const idObject = {
@@ -154,7 +150,6 @@ const addMatch = async( winnerId, loserId ) => {
 //DELETE
 const deleteMatch = async(id) => {
 	console.log('Deleting match...');
-
 	const docRef = db.collection(MATCHES).doc(id)
 	const docSnapshot = await docRef.get()
     if( docSnapshot.exists ) {
@@ -163,7 +158,6 @@ const deleteMatch = async(id) => {
     } else {
         return false
     }
-	
 }
 
 

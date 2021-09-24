@@ -6,7 +6,7 @@ const db = connect()
 
 const HAMSTERS = 'hamsters'
 
-//GET /cutest -> objekt för den hamster som vunnit högst procent av sina matcher
+//GET /winners -> top 5 winners
 
 router.get('/', async(req, res) => { 
     let array = await getTopWinners()

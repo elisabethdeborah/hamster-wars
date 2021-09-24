@@ -47,10 +47,10 @@ app.use('/manyMatches', manyMatchesRouter)
 //FEWEST GAMES
 app.use('/fewMatches', fewMatchesRouter)
 
-//DEAFETED
+//DEFEATED
 app.use('/defeated', defeatedRouter)
 
-//SCORE
+//SCORES: { challengerWins, defenderWins } 
 app.use('/score', scoreRouter)
 
 //Starta servern

@@ -7,11 +7,15 @@ const db = connect()
 
 const HAMSTERS = 'hamsters'
 
-//GET /cutest -> objekt för den hamster som vunnit högst procent av sina matcher
+//GET /losers -> top 5 losers
 
 router.get('/', async(req, res) => { 
     let array = await getTopLosers()
-    res.send(array)
+    if (array) {
+        res.status(200).send(array)
+    } else {
+        res.sendStatus(404)
+    }
 })
 
 

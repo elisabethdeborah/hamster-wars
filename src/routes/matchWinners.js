@@ -17,7 +17,7 @@ const HAMSTERS = 'hamsters'
 router.get('/:id', async(req, res) => { 
     let hasWonMatches = await getWinnersMatches(req.params.id)
     if (hasWonMatches) {
-        res.send(hasWonMatches) 
+        res.status(200).send(hasWonMatches) 
     } else {
         res.sendStatus(404)
     }

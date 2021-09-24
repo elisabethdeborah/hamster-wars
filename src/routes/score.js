@@ -39,7 +39,7 @@ const getScores = async(challengerId, defenderId) => {
     
     const matchadeArray = []
 
-
+    //array med matcher där challenger och defender mött varandra
 	await matchesSnapshot.forEach(async docRef => {
 		const data = await docRef.data()
         if(data.winnerId === challengerId && data.loserId === defenderId || data.winnerId === defenderId && data.loserId === challengerId ) {
@@ -51,7 +51,7 @@ const getScores = async(challengerId, defenderId) => {
         challengerWins: 0,
         defenderWins: 0
     }
-
+    //loopar igenom matcherna challenger och defender haft och räknar upp den hamster som vunnit mot den andra, sparar sedan i scoresObject
     matchadeArray.map(match => {
         if ( match.winnerId === challengerId ) {
             scoresObject.challengerWins++
@@ -59,8 +59,7 @@ const getScores = async(challengerId, defenderId) => {
             scoresObject.defenderWins++
         }
     })
-
-        return scoresObject
+    return scoresObject
 }
 
 module.exports = router
